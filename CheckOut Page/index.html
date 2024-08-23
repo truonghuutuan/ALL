@@ -6,6 +6,13 @@
     <title>Checkout Page</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <!-- Cập nhật liên kết SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>
+        (function(){
+            emailjs.init("OSl7iLXHubw6z6eFz"); 
+        })();
+    </script>
 </head>
 <body>
     <header>
@@ -49,21 +56,21 @@
         <div class="checkout">
             <div class="billing-details">
                 <h2>Billing Details</h2>
-                <form>
+                <form id="checkout-form">
                     <label>First Name*</label>
-                    <input type="text" required>
+                    <input type="text" id="first-name" required>
                     <label>Company Name</label>
-                    <input type="text">
+                    <input type="text" id="company-name">
                     <label>Street Address*</label>
-                    <input type="text" required>
+                    <input type="text" id="street-address" required>
                     <label>Apartment, floor, etc. (optional)</label>
-                    <input type="text">
+                    <input type="text" id="apartment">
                     <label>Town/City*</label>
-                    <input type="text" required>
+                    <input type="text" id="town-city" required>
                     <label>Phone Number*</label>
-                    <input type="text" required>
+                    <input type="text" id="phone" required>
                     <label>Email Address*</label>
-                    <input type="email" required>
+                    <input type="email" id="email" required>
                     <label class="save-info">
                         <input type="checkbox" id="save-info">
                         Save this information for faster check-out next time
@@ -112,7 +119,8 @@
                     <input type="text" placeholder="Coupon Code">
                     <button>Apply Coupon</button>
                 </div>
-                <button class="place-order">Place Order</button>
+                <!-- Nút này đã được thêm vào để gọi hàm validateAndSend() -->
+                <button class="place-order" onclick="validateAndSend()">Place Order</button>
             </div>
         </div>
     </div>
@@ -173,6 +181,67 @@
             <p>&copy; Copyright Rimel 2022. All rights reserved.</p>
         </div>
     </footer>
-  
+
+    <script>
+        function validateAndSend() {
+            const firstName = document.getElementById('first-name').value.trim();
+            const companyName = document.getElementById('company-name').value.trim();
+            const streetAddress = document.getElementById('street-address').value.trim();
+            const apartment = document.getElementById('apartment').value.trim();
+            const townCity = document.getElementById('town-city').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const phoneRegex = /^[0-9]{10}$/; 
+    
+            if (firstName === "") {
+                alert("Vui lòng nhập tên của bạn.");
+                return;
+            }
+    
+            if (streetAddress === "") {
+                alert("Vui lòng nhập địa chỉ đường phố của bạn.");
+                return;
+            }
+    
+            if (townCity === "") {
+                alert("Vui lòng nhập thành phố/tỉnh của bạn.");
+                return;
+            }
+    
+            if (!emailRegex.test(email) || !email.endsWith('@gmail.com')) {
+                alert("Vui lòng nhập địa chỉ Gmail hợp lệ.");
+                return;
+            }
+    
+            if (!phoneRegex.test(phone)) {
+                alert("Vui lòng nhập số điện thoại hợp lệ với đúng 10 chữ số.");
+                return;
+            }
+    
+            // Chuẩn bị dữ liệu để gửi
+            const data = {
+                first_name: firstName,
+                company_name: companyName,
+                street_address: streetAddress,
+                apartment: apartment,
+                town_city: townCity,
+                phone: phone,
+                email: email
+            };
+    
+            // Gửi dữ liệu đến EmailJS
+            emailjs.send('service_tuan', 'template_tuan', data)
+                .then(function(response) {
+                    alert('Đơn hàng của bạn đã được đặt thành công!');
+                }, function(error) {
+                    console.error('Lỗi khi đặt hàng:', error);
+                    alert('Lỗi khi gửi đơn hàng. Vui lòng kiểm tra thông tin và thử lại.');
+                });
+        }
+    </script>
+    
+    
 </body>
 </html>
